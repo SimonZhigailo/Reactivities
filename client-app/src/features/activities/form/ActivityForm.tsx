@@ -1,39 +1,59 @@
-import React, { useState, FormEvent, useContext } from "react";
+import React, { useState, FormEvent, useContext, useEffect } from "react";
 import { Segment, Form, Button } from "semantic-ui-react";
 import { IActivity } from "../../../app/models/activity";
 import { v4 as uuid } from "uuid";
 import ActivityStore from "../../../app/stores/activityStore";
 import { observer } from "mobx-react-lite";
+import { RouteComponentProps } from "react-router";
 
-interface IProps {
-  activity: IActivity;
+interface DetailParams {
+  id: string;
 }
 
-const ActivityForm: React.FC<IProps> = ({ activity: initialFormState }) => {
+const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({
+  match,
+  history
+}) => {
   const activityStore = useContext(ActivityStore);
   const {
     createActivity,
     editActivity,
     submitting,
-    cancelFormOpen
+    activity: initialFormState, //выбранная activity
+    loadActivity,
+    clearActivity
   } = activityStore;
-  const initializeForm = () => {
-    if (initialFormState) {
-      return initialFormState;
-    } else {
-      return {
-        id: "",
-        title: "",
-        category: "",
-        description: "",
-        date: "",
-        city: "",
-        venue: ""
-      };
-    }
-  };
 
-  const [activity, setActivity] = useState<IActivity>(initializeForm);
+  //1 элемент массива-переменная состояния, вторая метод который мы будем вызывать, если захотим изменить состояние
+  const [activity, setActivity] = useState<IActivity>({
+    id: "",
+    title: "",
+    category: "",
+    description: "",
+    date: "",
+    city: "",
+    venue: ""
+  });
+
+  //UseEffect вызывается при создании компонента
+  //Он выполняет ту же роль, что и componentDidMount, componentDidUpdate и componentWillUnmount
+  useEffect(() => {
+    if (match.params.id && activity.id.length === 0) {
+      loadActivity(match.params.id).then(
+        () => initialFormState && setActivity(initialFormState)
+      );
+    }
+    //данная функция очистки вызывается до удаления компонента ресурсов как componentDidUnmount
+    return () => {
+      clearActivity();
+    };
+  }, [
+    loadActivity,
+    clearActivity,
+    initialFormState,
+    match.params.id,
+    activity.id.length
+  ]); //при вызывании данных методов или id с RouteComponentProps срабатывает useEffect
 
   const handleSubmit = () => {
     if (activity.id.length === 0) {
@@ -41,9 +61,13 @@ const ActivityForm: React.FC<IProps> = ({ activity: initialFormState }) => {
         ...activity,
         id: uuid()
       };
-      createActivity(newActivity);
+      createActivity(newActivity).then(() =>
+        history.push(`/activities/${newActivity.id}`)
+      );
     } else {
-      editActivity(activity);
+      editActivity(activity).then(() =>
+        history.push(`/activities/${activity.id}`)
+      );
     }
   };
 
@@ -103,7 +127,7 @@ const ActivityForm: React.FC<IProps> = ({ activity: initialFormState }) => {
           content="Submit"
         />
         <Button
-          onClick={cancelFormOpen}
+          onClick={() => history.push("activities")}
           floated="right"
           type="button"
           content="Cancel"
