@@ -13,10 +13,32 @@ class ActivityStore {
   @observable target = "";
 
   @computed get activitiesByDate() {
-    return Array.from(this.activityRegistry.values()).sort(
-      (a, b) => Date.parse(a.date) - Date.parse(b.date)
+    return this.groupActivitiesByDate(
+      Array.from(this.activityRegistry.values())
     );
   }
+
+  groupActivitiesByDate(activities: IActivity[]) {
+    const sortedActivities = activities.sort(
+      (a, b) => Date.parse(a.date) - Date.parse(b.date)
+    );
+    //Object.entries возвращает объекты и проставленные им автоматом айдишники(в данном случае проставляются даты)
+    return Object.entries(
+      sortedActivities.reduce(
+        (activities, activity) => {
+          const date = activity.date.split("T")[0];
+          console.log("const date = " + date);
+          //Spread [...] используется для разделения коллекций на отдельные элементы, а rest, наоборот, для соединения отдельных значений в массив.
+          activities[date] = activities[date]
+            ? [...activities[date], activity]
+            : [activity];
+          return activities;
+        },
+        {} as { [key: string]: IActivity[] }
+      )
+    );
+  }
+
   //runInAction используется для целостной обработки асинхронного метода, без него всё что после калбека await не асинхронно(?)
   @action loadActivities = async () => {
     this.loadingInitial = true;
