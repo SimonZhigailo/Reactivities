@@ -24,18 +24,15 @@ class ActivityStore {
     );
     //Object.entries возвращает объекты и проставленные им автоматом айдишники(в данном случае проставляются даты)
     return Object.entries(
-      sortedActivities.reduce(
-        (activities, activity) => {
-          const date = activity.date.split("T")[0];
-          console.log("const date = " + date);
-          //Spread [...] используется для разделения коллекций на отдельные элементы, а rest, наоборот, для соединения отдельных значений в массив.
-          activities[date] = activities[date]
-            ? [...activities[date], activity]
-            : [activity];
-          return activities;
-        },
-        {} as { [key: string]: IActivity[] }
-      )
+      sortedActivities.reduce((activities, activity) => {
+        const date = activity.date.split("T")[0];
+        console.log("const date = " + date);
+        //Spread [...] используется для разделения коллекций на отдельные элементы, а rest, наоборот, для соединения отдельных значений в массив.
+        activities[date] = activities[date]
+          ? [...activities[date], activity]
+          : [activity];
+        return activities;
+      }, {} as { [key: string]: IActivity[] })
     );
   }
 
