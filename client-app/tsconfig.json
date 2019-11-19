@@ -17,5 +17,5 @@
     "experimentalDecorators": true,
     "baseUrl": "src"
   },
-  "include": ["src"]
+  "include": ["src", "./typings-custom/**/*.ts"]
 }

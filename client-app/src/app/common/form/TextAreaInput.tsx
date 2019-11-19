@@ -7,16 +7,15 @@ interface IProps
     FormFieldProps {}
 
 //деконструктим свойства класса FieldRenderProps
-const TextInput: React.FC<IProps> = ({
+const TextAreaInput: React.FC<IProps> = ({
   input,
   width,
-  type,
   placeholder,
   meta: { touched, error }
 }) => {
   //проверяем если поле нажато и есть ошибка !!-значит возврат не самого свойства а bool есть оно или нет
   return (
-    <Form.Field error={touched && !!error} type={type} width={width}>
+    <Form.Field error={touched && !!error} width={width}>
       {/* выводим все свойства IProps input имеет кучу свойств которые пресваиваем этому свойству */}
       <input {...input} placeholder={placeholder} type="text" />
       {/* если touched если error то выводим label ошибки (черт никогда не привыкну к таким условиям react) */}
@@ -29,4 +28,4 @@ const TextInput: React.FC<IProps> = ({
   );
 };
 
-export default TextInput;
+export default TextAreaInput;
