@@ -1,6 +1,9 @@
 import React, { useState, FormEvent, useContext, useEffect } from "react";
 import { Segment, Form, Button, Grid } from "semantic-ui-react";
-import { IActivity } from "../../../app/models/activity";
+import {
+  IActivityFormValues,
+  ActivityFormValues
+} from "../../../app/models/activity";
 import { v4 as uuid } from "uuid";
 import ActivityStore from "../../../app/stores/activityStore";
 import { observer } from "mobx-react-lite";
@@ -11,6 +14,7 @@ import TextAreaInput from "app/common/form/TextAreaInput";
 import SelectInput from "app/common/form/SelectInput";
 import { category } from "app/common/options/categoryOptions";
 import DateInput from "app/common/form/DateInput";
+import { combineDateAndTime } from "app/common/util/util";
 
 interface DetailParams {
   id: string;
@@ -31,34 +35,27 @@ const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({
   } = activityStore;
 
   //1 элемент массива-переменная состояния, вторая метод который мы будем вызывать, если захотим изменить состояние
-  const [activity, setActivity] = useState<IActivity>({
-    id: "",
-    title: "",
-    category: "",
-    description: "",
-    date: "",
-    city: "",
-    venue: ""
-  });
+  const [activity, setActivity] = useState(new ActivityFormValues());
+  const [loading, setLoading] = useState(false);
 
   //UseEffect вызывается при создании компонента
   //Он выполняет ту же роль, что и componentDidMount, componentDidUpdate и componentWillUnmount
   useEffect(() => {
-    if (match.params.id && activity.id.length === 0) {
-      loadActivity(match.params.id).then(
-        () => initialFormState && setActivity(initialFormState)
-      );
+    if (match.params.id) {
+      setLoading(true);
+      loadActivity(match.params.id)
+        .then(activity => setActivity(new ActivityFormValues(activity)))
+        .finally(() => setLoading(false));
     }
     //данная функция очистки вызывается до удаления компонента ресурсов как componentDidUnmount
-    return () => {
-      clearActivity();
-    };
+    // return () => {
+    //   clearActivity();
+    // };
   }, [
     loadActivity,
-    clearActivity,
-    initialFormState,
-    match.params.id,
-    activity.id.length
+    match.params.id
+    // clearActivity,
+    // activity.id
   ]); //при вызывании данных методов или id с RouteComponentProps срабатывает useEffect
 
   // const handleSubmit = () => {
@@ -78,7 +75,23 @@ const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({
   // };
 
   const handleFinalFormSubmit = (values: any) => {
-    console.log(values);
+    const dateAndTime = combineDateAndTime(values.date, values.time);
+    //скопировать значения из values
+    const { date, time, ...activity } = values;
+    activity.date = dateAndTime;
+    if (!activity.id) {
+      let newActivity = {
+        ...activity,
+        id: uuid()
+      };
+      createActivity(newActivity).then(() =>
+        history.push(`/activities/${newActivity.id}`)
+      );
+    } else {
+      editActivity(activity).then(() =>
+        history.push(`/activities/${activity.id}`)
+      );
+    }
   };
 
   return (
@@ -86,9 +99,10 @@ const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({
       <Grid.Column width={10}>
         <Segment clearing>
           <FinalForm
+            initialValues={activity}
             onSubmit={handleFinalFormSubmit}
             render={({ handleSubmit }) => (
-              <Form onSubmit={handleSubmit}>
+              <Form onSubmit={handleSubmit} loading={loading}>
                 <Field
                   name="title"
                   placeholder="Title"
@@ -108,13 +122,22 @@ const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({
                   value={activity.category}
                   component={SelectInput}
                 />
-                <Field
-                  name="date"
-                  type="datetime-local"
-                  placeholder="Date"
-                  value={activity.date}
-                  component={DateInput}
-                />
+                <Form.Group widths="equal">
+                  <Field
+                    name="date"
+                    date={true}
+                    placeholder="Date"
+                    value={activity.date}
+                    component={DateInput}
+                  />
+                  <Field
+                    name="time"
+                    time={true}
+                    placeholder="Time"
+                    value={activity.date}
+                    component={DateInput}
+                  />
+                </Form.Group>
                 <Field
                   name="city"
                   placeholder="City"
@@ -135,7 +158,7 @@ const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({
                   content="Submit"
                 />
                 <Button
-                  onClick={() => history.push("activities")}
+                  onClick={() => history.goBack()}
                   floated="right"
                   type="button"
                   content="Cancel"

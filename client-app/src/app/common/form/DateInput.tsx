@@ -3,12 +3,14 @@ import { FieldRenderProps } from "react-final-form";
 import { FormFieldProps, Form, Label } from "semantic-ui-react";
 import { DateTimePicker } from "react-widgets";
 //компонент текстового поля, который вставляется в React Final Form и наследуется от FieldRenderProps из React Final Form что бы переопределить стандартное поведение input
-interface IProps extends FieldRenderProps<Date, HTMLElement>, FormFieldProps {}
+interface IProps extends FieldRenderProps<any, HTMLElement>, FormFieldProps {}
 
 const DateInput: React.FC<IProps> = ({
   input,
   width,
   placeholder,
+  date = false,
+  time = false,
   meta: { touched, error },
   ...rest
 }) => {
@@ -19,6 +21,8 @@ const DateInput: React.FC<IProps> = ({
         placeholder={placeholder}
         value={input.value || null}
         onChange={input.onChange}
+        date={date}
+        time={time}
         {...rest}
       />
       {/* если touched если error то выводим label ошибки (черт никогда не привыкну к таким условиям react) */}
