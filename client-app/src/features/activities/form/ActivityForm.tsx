@@ -18,6 +18,7 @@ import {
   composeValidators,
   hasLengthGreaterThan
 } from "revalidate";
+import { RootStoreContext } from "app/stores/rootStore";
 
 const validate = combineValidators({
   title: isRequired({ message: "The Event title is required" }),
@@ -42,15 +43,13 @@ const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({
   match,
   history
 }) => {
-  const activityStore = useContext(ActivityStore);
+  const rootStore = useContext(RootStoreContext);
   const {
     createActivity,
     editActivity,
     submitting,
-    activity: initialFormState, //выбранная activity
-    loadActivity,
-    clearActivity
-  } = activityStore;
+    loadActivity
+  } = rootStore.activityStore;
 
   //1 элемент массива-переменная состояния, вторая метод который мы будем вызывать, если захотим изменить состояние
   const [activity, setActivity] = useState(new ActivityFormValues());

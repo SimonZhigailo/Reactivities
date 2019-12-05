@@ -84,14 +84,6 @@ namespace API
     {
       app.UseMiddleware<ErrorHandlingMiddleware>();
 
-      // if (env.IsDevelopment())
-      // {
-      //   // app.UseDeveloperExceptionPage();
-      // }
-
-      // app.UseHttpsRedirection();
-
-
       app.UseRouting();
       app.UseCors("CorsPolicy");
 
