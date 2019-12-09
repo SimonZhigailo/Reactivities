@@ -16,20 +16,33 @@ import ActivityDetails from "../../features/activities/details/ActivityDetails";
 import NotFound from "./NotFound";
 import { ToastContainer } from "react-toastify";
 import { RootStoreContext } from "app/stores/rootStore";
+import LoginForm from "features/user/LoginForm";
 
 //принимает RouteComponentProps который содержит история перехода между страницами и прочие объекты Routing
 const App: React.FC<RouteComponentProps> = ({ location }) => {
   //подключение к контексту хранилища состояний MobX
   const rootStore = useContext(RootStoreContext);
-  const { loadActivities, loadingInitial } = rootStore.activityStore;
+  const { setAppLoaded, token, appLoaded } = rootStore.commonStore;
+  const { getUser } = rootStore.userStore;
+
+  //если есть jwt токен в браузере
+  useEffect(() => {
+    if (token) {
+      getUser().finally(() => setAppLoaded());
+    } else {
+      setAppLoaded();
+    }
+  }, [getUser, setAppLoaded, token]); //в конце зависимости при ререндеринге которых будет вызываться (если пусто, то при любых изменениях везде)
+
+  //показ загрузки на флаге
+  if (!appLoaded) return <LoadingComponent content="Loading app..." />;
+
+  // const { loadActivities, loadingInitial } = rootStore.activityStore;
 
   //хук при рендеринге или изменению компонента, второй аргумент в виде массива говорит о 1)если пустой, что он срабатывает только при загрузке, не обновлении (DidMount && !didUpdate) 2)если массив не пустой, при изменении праметра в массиве или при загрузке (didMount && didUpdate(activityStore))
-  useEffect(() => {
-    loadActivities();
-  }, [loadActivities]);
-
-  //показывает загрузку, пока activityStore обрабатывает что-нибудь
-  if (loadingInitial) return <LoadingComponent content="Loading activities" />;
+  // useEffect(() => {
+  //   loadActivities();
+  // }, [loadActivities]);
 
   return (
     <Fragment>
@@ -51,6 +64,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
                   component={ActivityForm}
                   key={location.key} //добавляем ключ в виде ключа location , что бы когда менялся props, компонент пересоздовался, Fully Uncontrolled Component with a key to reset component state
                 />
+                <Route path="/login" component={LoginForm} />
                 <Route component={NotFound} />
               </Switch>
             </Container>
