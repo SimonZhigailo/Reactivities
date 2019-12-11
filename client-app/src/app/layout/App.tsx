@@ -17,6 +17,7 @@ import NotFound from "./NotFound";
 import { ToastContainer } from "react-toastify";
 import { RootStoreContext } from "app/stores/rootStore";
 import LoginForm from "features/user/LoginForm";
+import ModalContainer from "app/common/modals/ModalContainer";
 
 //принимает RouteComponentProps который содержит история перехода между страницами и прочие объекты Routing
 const App: React.FC<RouteComponentProps> = ({ location }) => {
@@ -46,6 +47,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
 
   return (
     <Fragment>
+      <ModalContainer />
       <ToastContainer position="bottom-right" />
       <Route exact path="/" component={HomePage} />
       <Route
