@@ -21,9 +21,10 @@ export default class ActivityStore {
   @observable loading = false;
 
   @computed get activitiesByDate() {
-    return this.groupActivitiesByDate(
+    let arrayOfSortedActivities = this.groupActivitiesByDate(
       Array.from(this.activityRegistry.values())
     );
+    return arrayOfSortedActivities;
   }
 
   groupActivitiesByDate(activities: IActivity[]) {
@@ -34,7 +35,6 @@ export default class ActivityStore {
     return Object.entries(
       sortedActivities.reduce((activities, activity) => {
         const date = activity.date.toISOString().split("T")[0];
-        console.log("const date = " + date);
         //Spread [...] используется для разделения коллекций на отдельные элементы, а rest, наоборот, для соединения отдельных значений в массив.
         activities[date] = activities[date]
           ? [...activities[date], activity]

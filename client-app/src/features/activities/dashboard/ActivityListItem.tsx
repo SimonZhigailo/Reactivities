@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { Item, Button, Label, Segment, Icon } from "semantic-ui-react";
+import React from "react";
+import { Item, Button, Segment, Icon, Label } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { IActivity } from "../../../app/models/activity";
 import { format } from "date-fns";
@@ -7,6 +7,7 @@ import ActivityListItemAttendees from "./ActivityListItemAttendees";
 
 const ActivityListItem: React.FC<{ activity: IActivity }> = ({ activity }) => {
   const host = activity.attendees.filter(x => x.isHost)[0];
+  console.log(host.username);
   return (
     <Segment.Group>
       <Segment>
@@ -31,7 +32,6 @@ const ActivityListItem: React.FC<{ activity: IActivity }> = ({ activity }) => {
                   />
                 </Item.Description>
               )}
-
               {activity.isGoing && !activity.isHost && (
                 <Item.Description>
                   <Label
@@ -53,16 +53,14 @@ const ActivityListItem: React.FC<{ activity: IActivity }> = ({ activity }) => {
         <ActivityListItemAttendees attendees={activity.attendees} />
       </Segment>
       <Segment clearing>
-        <span>
-          {activity.description}
-          <Button
-            as={Link}
-            to={`/activities/${activity.id}`}
-            floated="right"
-            content="View"
-            color="blue"
-          />
-        </span>
+        <span>{activity.description}</span>
+        <Button
+          as={Link}
+          to={`/activities/${activity.id}`}
+          floated="right"
+          content="View"
+          color="blue"
+        />
       </Segment>
     </Segment.Group>
   );

@@ -13,7 +13,8 @@ namespace API.Controllers
     [HttpPost("login")]
     public async Task<ActionResult<User>> Login(Login.Query query)
     {
-      return await Mediator.Send(query);
+      var User = await Mediator.Send(query);
+      return User;
     }
 
 
