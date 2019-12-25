@@ -3,6 +3,7 @@ import { IActivity } from "../models/activity";
 import { history } from "../..";
 import { toast } from "react-toastify";
 import { IUser, IUserFormValues } from "app/models/user";
+import { IProfile } from "app/models/profile";
 
 axios.defaults.baseURL = "http://localhost:5000/api";
 
@@ -80,6 +81,11 @@ const Activities = {
   unattend: (id: string) => requests.del(`/activities/${id}/attend`)
 };
 
+const Profiles = {
+  get: (username: string): Promise<IProfile> =>
+    requests.get(`/profiles/${username}`)
+};
+
 const User = {
   current: (): Promise<IUser> => requests.get("/user"),
   //принимает Iuserformvalues возвращает Promise<IUser>
@@ -91,5 +97,6 @@ const User = {
 
 export default {
   Activities,
-  User
+  User,
+  Profiles
 };

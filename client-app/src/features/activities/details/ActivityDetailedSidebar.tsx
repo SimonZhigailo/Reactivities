@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { Segment, List, Item, Label, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
-import { IAttendee } from "app/models/activity";
+import { IAttendee } from "../../../app/models/activity";
 import { observer } from "mobx-react-lite";
 
 interface IProps {
@@ -34,10 +34,7 @@ const ActivityDetailedSidebar: React.FC<IProps> = ({ attendees }) => {
                   Host
                 </Label>
               )}
-              <Image
-                size="tiny"
-                src={attendee.username || "/assets/user.png"}
-              />
+              <Image size="tiny" src={attendee.image || "/assets/user.png"} />
               <Item.Content verticalAlign="middle">
                 <Item.Header as="h3">
                   <Link to={`/profile/${attendee.username}`}>

@@ -18,6 +18,7 @@ import { ToastContainer } from "react-toastify";
 import { RootStoreContext } from "app/stores/rootStore";
 import LoginForm from "features/user/LoginForm";
 import ModalContainer from "app/common/modals/ModalContainer";
+import ProfilePage from "features/profiles/ProfilePage";
 
 //принимает RouteComponentProps который содержит история перехода между страницами и прочие объекты Routing
 const App: React.FC<RouteComponentProps> = ({ location }) => {
@@ -66,7 +67,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
                   component={ActivityForm}
                   key={location.key} //добавляем ключ в виде ключа location , что бы когда менялся props, компонент пересоздовался, Fully Uncontrolled Component with a key to reset component state
                 />
-                <Route path="/login" component={LoginForm} />
+                <Route path="/profile/:username" component={ProfilePage} />
                 <Route component={NotFound} />
               </Switch>
             </Container>
