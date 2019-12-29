@@ -7,7 +7,7 @@ interface IProps {
 }
 
 const dropzoneStyles = {
-  border: "dashed 3px ",
+  border: "dashed 3px",
   borderColor: "#eee",
   borderRadius: "5px",
   paddingTop: "30px",
@@ -20,15 +20,18 @@ const dropzoneActive = {
 };
 
 const PhotoWidgetDropzone: React.FC<IProps> = ({ setFiles }) => {
-  const onDrop = useCallback(acceptedFiles => {
-    setFiles(
-      acceptedFiles.map((file: object) =>
-        Object.assign(file, {
-          preview: URL.createObjectURL(file)
-        })
-      )
-    );
-  }, []);
+  const onDrop = useCallback(
+    acceptedFiles => {
+      setFiles(
+        acceptedFiles.map((file: object) =>
+          Object.assign(file, {
+            preview: URL.createObjectURL(file)
+          })
+        )
+      );
+    },
+    [setFiles]
+  );
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   return (
@@ -40,7 +43,7 @@ const PhotoWidgetDropzone: React.FC<IProps> = ({ setFiles }) => {
     >
       <input {...getInputProps()} />
       <Icon name="upload" size="huge" />
-      <Header content="Drop image here " />
+      <Header content="Drop image here" />
     </div>
   );
 };

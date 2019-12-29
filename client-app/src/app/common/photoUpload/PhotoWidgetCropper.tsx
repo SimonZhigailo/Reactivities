@@ -8,10 +8,8 @@ interface IProps {
 }
 
 const PhotoWidgetCropper: React.FC<IProps> = ({ setImage, imagePreview }) => {
-  //ссылка на cropper input элемент
   const cropper = useRef<Cropper>(null);
 
-  //серия проверок есть ли изображение и crop
   const cropImage = () => {
     if (
       cropper.current &&
@@ -19,8 +17,6 @@ const PhotoWidgetCropper: React.FC<IProps> = ({ setImage, imagePreview }) => {
     ) {
       return;
     }
-
-    //вырезаем изображение кропером и передаем его в виде blob
     cropper &&
       cropper.current &&
       cropper.current.getCroppedCanvas().toBlob((blob: any) => {
@@ -35,7 +31,7 @@ const PhotoWidgetCropper: React.FC<IProps> = ({ setImage, imagePreview }) => {
       style={{ height: 200, width: "100%" }}
       // Cropper.js options
       aspectRatio={1 / 1}
-      preview=".image-preview"
+      preview=".img-preview"
       guides={false}
       viewMode={1}
       dragMode="move"
