@@ -34,7 +34,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
     } else {
       setAppLoaded();
     }
-  }, [getUser, setAppLoaded, token]); //в конце зависимости при ререндеринге которых будет вызываться (если пусто, то при любых изменениях везде)
+  }, [getUser, setAppLoaded, token]); //в конце зависимости при ререндеринге которых будет вызываться (если пусто, то при любых изменениях везде и один раз, если нет скобок то будет бесконечно в цикле)
 
   //показ загрузки на флаге
   if (!appLoaded) return <LoadingComponent content="Loading app..." />;
