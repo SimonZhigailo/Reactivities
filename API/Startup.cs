@@ -24,6 +24,7 @@ using Infrastructure.Photos;
 using Application.Photos;
 using API.SinalR;
 using System.Threading.Tasks;
+using Application.Profiles;
 
 namespace API
 {
@@ -112,6 +113,7 @@ namespace API
       services.AddScoped<IJwtGenerator, JwtGenerator>();
       services.AddScoped<IUserAccessor, UserAccessor>();
       services.AddScoped<IPhotoAccessor, PhotoAccessor>();
+      services.AddScoped<IProfileReader, ProfileReader>();
       //берем из user-secrets секцию начинающуюся на Cloudinary
       //(Cloudinary:ApiKey, Cloudinary:CloudName, Cloudinary:ApiSecret) и биндим в класс строки
       services.Configure<CloudinarySettings>(Configuration.GetSection("Cloudinary"));
