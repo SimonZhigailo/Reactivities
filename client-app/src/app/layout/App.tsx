@@ -16,9 +16,9 @@ import ActivityDetails from "../../features/activities/details/ActivityDetails";
 import NotFound from "./NotFound";
 import { ToastContainer } from "react-toastify";
 import { RootStoreContext } from "app/stores/rootStore";
-import LoginForm from "features/user/LoginForm";
 import ModalContainer from "app/common/modals/ModalContainer";
 import ProfilePage from "features/profiles/ProfilePage";
+import PrivateRoute from "./PrivateRoute";
 
 //принимает RouteComponentProps который содержит история перехода между страницами и прочие объекты Routing
 const App: React.FC<RouteComponentProps> = ({ location }) => {
@@ -59,15 +59,25 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
             <Container style={{ marginTop: "7em" }}>
               {/* switch говорит что каждый из Routes эксклюзивен и не прогружается больше одного раза(не прогружается на главной странице) */}
               <Switch>
-                <Route exact path="/activities" component={ActivityDashboard} />
-                <Route path="/activities/:id" component={ActivityDetails} />
+                <PrivateRoute
+                  exact
+                  path="/activities"
+                  component={ActivityDashboard}
+                />
+                <PrivateRoute
+                  path="/activities/:id"
+                  component={ActivityDetails}
+                />
 
-                <Route
+                <PrivateRoute
                   path={["/createActivity", "/manage/:id"]}
                   component={ActivityForm}
                   key={location.key} //добавляем ключ в виде ключа location , что бы когда менялся props, компонент пересоздовался, Fully Uncontrolled Component with a key to reset component state
                 />
-                <Route path="/profile/:username" component={ProfilePage} />
+                <PrivateRoute
+                  path="/profile/:username"
+                  component={ProfilePage}
+                />
                 <Route component={NotFound} />
               </Switch>
             </Container>

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Persistence;
 using FluentValidation.AspNetCore;
 using API.Middleware;
@@ -25,6 +24,7 @@ using Application.Photos;
 using API.SinalR;
 using System.Threading.Tasks;
 using Application.Profiles;
+using System;
 
 namespace API
 {
@@ -36,6 +36,26 @@ namespace API
     }
 
     public IConfiguration Configuration { get; }
+    //Метод вызывается из Development
+    public void ConfigureDevelopmentServices(IServiceCollection services)
+    {
+      services.AddDbContext<DataContext>(opt =>
+{
+  opt.UseLazyLoadingProxies();
+  opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+});
+      ConfigureServices(services);
+    }
+
+    public void ConfigureProductionServices(IServiceCollection services)
+    {
+      services.AddDbContext<DataContext>(opt =>
+{
+  opt.UseLazyLoadingProxies();
+  opt.UseMySql(Configuration.GetConnectionString("DefaultConnection"));
+});
+      ConfigureServices(services);
+    }
 
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
@@ -49,7 +69,7 @@ namespace API
       {
         opt.AddPolicy("CorsPolicy", policy =>
         {
-          policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000").AllowCredentials();
+          policy.AllowAnyHeader().AllowAnyMethod().WithExposedHeaders("WWW-Authenticate").WithOrigins("http://localhost:3000").AllowCredentials();
         });
       });
       services.AddMediatR(typeof(List.Handler).Assembly);
@@ -91,7 +111,9 @@ namespace API
           ValidateIssuerSigningKey = true,
           IssuerSigningKey = key,
           ValidateAudience = false,
-          ValidateIssuer = false
+          ValidateIssuer = false,
+          ValidateLifetime = true,
+          ClockSkew = TimeSpan.Zero
         };
         //Event - при запросе если токен есть и путь идёт в SignalR Hub /chat 
         opt.Events = new JwtBearerEvents
@@ -125,6 +147,10 @@ namespace API
     {
       app.UseMiddleware<ErrorHandlingMiddleware>();
 
+      //ищет в wwwroot index.html и прочие дефалт имена
+      app.UseDefaultFiles();
+      app.UseStaticFiles();
+
       app.UseRouting();
       app.UseCors("CorsPolicy");
 
@@ -136,6 +162,8 @@ namespace API
         endpoints.MapControllers();
         //расположение класса ChatHub (SignalR не Http а webSocket соеденение (проверка токена выше в настройке конфигурации))
         endpoints.MapHub<ChatHub>("/chat");
+        //все руты которые не соответсуют контроллерам и чату будут передоваться в React
+        endpoints.MapFallbackToController("Index", "Fallback");
       });
     }
   }

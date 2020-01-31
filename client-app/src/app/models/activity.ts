@@ -1,4 +1,7 @@
-import { object } from "prop-types";
+export interface IActivitiesEnvelope {
+  activities: IActivity[];
+  activityCount: number;
+}
 
 export interface IActivity {
   id: string;
